@@ -46,20 +46,21 @@ class CodigoDetallesViewController: UIViewController {
                 print("respuesta=\(self.jsonData)")
                 DispatchQueue.main.async {
                     // Actualizar campos
-                    if (self.jsonData["error"].stringValue==""){
+                    print("dato: \(self.jsonData[1])")
+                    if (self.jsonData[1]["error"].stringValue==""){
                         self.codigoLabel.text = self.codigo
-                        self.nombreLabel.text = self.jsonData["0"]["nombre"].stringValue
-                        self.proveedorLabel.text = self.jsonData["0"]["proveedor"].stringValue
-                        self.descripcionLabel.text = self.jsonData["0"]["descripcion"].stringValue
-                        self.serieLabel.text = self.jsonData["0"]["num_serie"].stringValue
-                        self.cantidadLabel.text = self.jsonData["0"]["cantidad"].stringValue
-                        self.categoriaLabel.text = self.jsonData["0"]["categoria"].stringValue
-                        self.empresaLabel.text = self.jsonData["0"]["empresa"].stringValue
-                        self.responsableLabel.text = self.jsonData["0"]["responsable"].stringValue
-                        self.ubicacionLabel.text = self.jsonData["0"]["ubicacion"].stringValue
-                        self.idPedidoLabel.text = self.jsonData["0"]["id_pedido"].stringValue
+                        self.nombreLabel.text = self.jsonData[0]["nombre"].stringValue
+                        self.proveedorLabel.text = self.jsonData[0]["proveedor"].stringValue
+                        self.descripcionLabel.text = self.jsonData[0]["descripcion"].stringValue
+                        self.serieLabel.text = self.jsonData[0]["num_serie"].stringValue
+                        self.cantidadLabel.text = self.jsonData[0]["cantidad"].stringValue
+                        self.categoriaLabel.text = self.jsonData[0]["categoria"].stringValue
+                        self.empresaLabel.text = self.jsonData[0]["empresa"].stringValue
+                        self.responsableLabel.text = self.jsonData[0]["responsable"].stringValue
+                        self.ubicacionLabel.text = self.jsonData[0]["ubicacion"].stringValue
+                        self.idPedidoLabel.text = self.jsonData[0]["id_pedido"].stringValue
                         //let empresa = self.jsonData["empresa"].stringValue
-                        self.empresaImageView.image = UIImage(named: self.jsonData["0"]["empresa"].stringValue)
+                        self.empresaImageView.image = UIImage(named: self.jsonData[0]["empresa"].stringValue)
                         /*
                          switch empresa {
                          case "Corporativo STR" : self.empresaImageView.image = UIImage(named: empre)
