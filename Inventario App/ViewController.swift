@@ -35,11 +35,11 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         
         // Get an instance of the AVCaptureDevice class to initialize a device object and provide the video
         // as the media type parameter.
-        let captureDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+        let captureDevice = AVCaptureDevice.default(for: AVMediaType.video)
         
         do {
             // Get an instance of the AVCaptureDeviceInput class using the previous device object.
-            let input = try AVCaptureDeviceInput(device: captureDevice)
+            let input = try AVCaptureDeviceInput(device: captureDevice!)
             
             // Initialize the captureSession object.
             captureSession = AVCaptureSession()
@@ -59,11 +59,11 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         
         // Set delegate and use the default dispatch queue to execute the call back
         captureMetadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
-        captureMetadataOutput.metadataObjectTypes = [AVMetadataObjectTypeEAN13Code]
+        captureMetadataOutput.metadataObjectTypes = [AVMetadataObject.ObjectType.ean13]
         
         // Initialize the video preview layer and add it as a sublayer to the viewPreview view's layer.
-        videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        videoPreviewLayer?.videoGravity = AVLayerVideoGravityResizeAspectFill
+        videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession!)
+        videoPreviewLayer?.videoGravity = AVLayerVideoGravity.resizeAspectFill
         videoPreviewLayer?.frame = view.layer.bounds
         view.layer.addSublayer(videoPreviewLayer!)
         
@@ -81,7 +81,7 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         view.addSubview(CodeFrameView!)
         view.bringSubview(toFront: CodeFrameView!)
     }
-    func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [Any]!, from connection: AVCaptureConnection!) {
+    func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         // Check if the metadataObjects array is not nil and it contains at least one object.
         if metadataObjects == nil || metadataObjects.count == 0 {
             CodeFrameView?.frame = CGRect.zero
@@ -92,7 +92,7 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
         // Get the metadata object.
         let metadataObj = metadataObjects[0] as! AVMetadataMachineReadableCodeObject
         
-        if metadataObj.type == AVMetadataObjectTypeEAN13Code {
+        if metadataObj.type == AVMetadataObject.ObjectType.ean13 {
             // If the found metadata is equal to the QR code metadata then update the status label's text and set the bounds
             
             let CodeObject = videoPreviewLayer?.transformedMetadataObject(for: metadataObj as AVMetadataMachineReadableCodeObject) as! AVMetadataMachineReadableCodeObject
@@ -102,12 +102,12 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
                 captureSession?.stopRunning()
                 CodeLabel.text = metadataObj.stringValue
                 audioPlayer.play()
-                let device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+                let device = AVCaptureDevice.default(for: AVMediaType.video)
                 if (device?.hasTorch)! {
                     do {
                         try device?.lockForConfiguration()
-                        if (device?.torchMode == AVCaptureTorchMode.on) {
-                            device?.torchMode = AVCaptureTorchMode.off
+                        if (device?.torchMode == AVCaptureDevice.TorchMode.on) {
+                            device?.torchMode = AVCaptureDevice.TorchMode.off
                             self.lightButton.setTitle("Encender Luz", for: .normal)
                         }
                         device?.unlockForConfiguration()
@@ -122,15 +122,15 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     }
     
     @IBAction func lightButton(_ sender: Any) {
-        let device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+        let device = AVCaptureDevice.default(for: AVMediaType.video)
         if (device?.hasTorch)! {
             do {
                 try device?.lockForConfiguration()
-                if (device?.torchMode == AVCaptureTorchMode.on) {
-                    device?.torchMode = AVCaptureTorchMode.off
+                if (device?.torchMode == AVCaptureDevice.TorchMode.on) {
+                    device?.torchMode = AVCaptureDevice.TorchMode.off
                     self.lightButton.setTitle("Encender Luz", for: .normal)
                 } else {
-                    try device?.setTorchModeOnWithLevel(1.0)
+                    try device?.setTorchModeOn(level: 1.0)
                     self.lightButton.setTitle("Apagar Luz", for: .normal)
                 }
                 device?.unlockForConfiguration()
@@ -142,11 +142,11 @@ class ViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     }
  
     override func viewWillAppear(_ animated: Bool) {
-        let device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+        let device = AVCaptureDevice.default(for: AVMediaType.video)
         if (device?.hasTorch)! {
             do {
                 try device?.lockForConfiguration()
-                if (device?.torchMode == AVCaptureTorchMode.on) {
+                if (device?.torchMode == AVCaptureDevice.TorchMode.on) {
                     self.lightButton.setTitle("Apagar Luz", for: .normal)
                 } else {
                     self.lightButton.setTitle("Encender Luz", for: .normal)
